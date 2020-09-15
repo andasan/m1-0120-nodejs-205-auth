@@ -4,15 +4,15 @@ const router = express.Router();
 const shopController = require('../controllers/shop.controller');
 
 //shop index ------ in browser: /
-// router.get('/', shopController.getProducts);
+router.get('/', shopController.getProducts);
 
 // //get all products ------ in browser: /products
 // router.get('/products', (req,res,next) => {
 
 // })
 
-// //get one product
-// router.get('/products/:productId', shopController.getOneProduct);
+//get one product
+router.get('/products/:productId', shopController.getOneProduct);
 
 // //go to cart page
 // router.get('/cart', shopController.getCart);
