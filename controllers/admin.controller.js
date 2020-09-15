@@ -18,7 +18,8 @@ exports.postAddProduct = (req,res,next) => {
         title: title, 
         imageUrl: imageUrl, 
         description: description, 
-        price: price
+        price: price,
+        userId: req.user //mongoose will pick the id from the user object of request
     });
     product
         .save()

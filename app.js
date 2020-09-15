@@ -16,7 +16,7 @@ const adminRoute = require('./routes/admin.route');
 // const mongoConnect = require('./util/database').mongoConnect;
 const errorController = require('./controllers/error.controller');
 
-// const User = require('./models/user.model');
+const User = require('./models/user.model');
 
 //-------Middlewares
 
@@ -32,14 +32,14 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use('/public', express.static('public'));
 
 //dummy auth flow ----storing a reference of a user
-// app.use((req,res,next) => {
-//     User.findById('5f5fb438230cc508758033f0')
-//         .then(user => {
-//             req.user = user;
-//             next();
-//         })
-//         .catch(err => console.log(err))
-// });
+app.use((req,res,next) => {
+    User.findById('5f610976005db1074aba6607')
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => console.log(err))
+});
 
 //set the routes for admin
 app.use('/admin', adminRoute);
@@ -61,7 +61,21 @@ mongoose
     })
     .then(() => {
         console.log('Connected to Database!');
-        app.listen(PORT, ()=> console.log(`Server started at port ${PORT}.`))
+        app.listen(PORT, ()=> console.log(`Server started at port ${PORT}.`));
+
+        //not necessary for production, just to create a a user to get an id for dummy auth
+        User.findOne().then((user)=> {
+            if(!user){
+                const user = new User({
+                    name: 'admin',
+                    email: 'admin@mail.com',
+                    cart: {
+                        items: []
+                    }
+                });
+                user.save();
+            }
+        });
     })
     .catch(err => console.log(err))
 
