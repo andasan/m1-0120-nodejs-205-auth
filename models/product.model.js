@@ -1,57 +1,51 @@
-const Cart = require('./cart.model');
-const mongodb = require('mongodb');
-const getDb = require('../util/database').getDb;
-
-module.exports = class Products {
-    constructor(userId, title, imageUrl, description, price) {
-        this.userId = userId;
-        this.title = title;
-        this.imageUrl = imageUrl;
-        this.description = description;
-        this.price = price;
-    }
-
-    //save
-    save() {
-        const db = getDb();
-        db.collection('products').insertOne(this); 
-        // db.collection('products').insertOne({ 
-        //     title: this.title, 
-        //     imageUrl: this.imageUrl, 
-        //     description: this.description, 
-        //     price: this.price 
-        // }); 
-    }
-
-    edit(id) {
-        const db = getDb();
-        console.log(id);
-        return db.collection('products').updateOne({_id: new mongodb.ObjectID(id)}, {$set: this});
-    }
-
-    //deletebyid
-    static deleteById(id) {
-        const db = getDb();
-        return db.collection('products').deleteOne({_id: new mongodb.ObjectID(id)});
-    }
-
-    //fetch all data
-    static fetchAll() {
-        const db = getDb();
-        return db.collection('products').find().toArray();
-    }
-
-    //find by id
-    static findById(id) {
-        const db = getDb();
-        //string !== objectID
-        return db.collection('products').find({_id: new mongodb.ObjectID(id)}).next();
-    }
-}
 
 
 
+/////////-------------- FROM MongoDB
+// const Cart = require('./cart.model');
+// const mongodb = require('mongodb');
+// const getDb = require('../util/database').getDb;
 
+// module.exports = class Products {
+//     constructor(userId, title, imageUrl, description, price) {
+//         this.userId = userId;
+//         this.title = title;
+//         this.imageUrl = imageUrl;
+//         this.description = description;
+//         this.price = price;
+//     }
+
+//     //save
+//     save() {
+//         const db = getDb();
+//         db.collection('products').insertOne(this); 
+//     }
+
+//     edit(id) {
+//         const db = getDb();
+//         console.log(id);
+//         return db.collection('products').updateOne({_id: new mongodb.ObjectID(id)}, {$set: this});
+//     }
+
+//     //deletebyid
+//     static deleteById(id) {
+//         const db = getDb();
+//         return db.collection('products').deleteOne({_id: new mongodb.ObjectID(id)});
+//     }
+
+//     //fetch all data
+//     static fetchAll() {
+//         const db = getDb();
+//         return db.collection('products').find().toArray();
+//     }
+
+//     //find by id
+//     static findById(id) {
+//         const db = getDb();
+//         //string !== objectID
+//         return db.collection('products').find({_id: new mongodb.ObjectID(id)}).next();
+//     }
+// }
 
 /////////-------------- FROM MYSQL
 // module.exports = class Products {

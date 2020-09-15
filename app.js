@@ -1,14 +1,22 @@
+//git clone https://github.com/andasan/m1-0120-nodejs-203-mongoose.git 
+//after cloning....
+//git remote -v //to check the origin's url
+//git remote remove origin
+//git remote add origin <your_url>
+
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path');
+// const path = require('path');
+const mongoose = require('mongoose');
 
 const app = express();
 const shopRoute = require('./routes/shop.route');
 const adminRoute = require('./routes/admin.route');
-const mongoConnect = require('./util/database').mongoConnect;
+// const mongoConnect = require('./util/database').mongoConnect;
 const errorController = require('./controllers/error.controller');
 
-const User = require('./models/user.model');
+// const User = require('./models/user.model');
 
 //-------Middlewares
 
@@ -24,21 +32,14 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use('/public', express.static('public'));
 
 //dummy auth flow ----storing a reference of a user
-app.use((req,res,next) => {
-    // const user = new User('admin', 'admin@mail.com');
-    // user.save()
-    //     .then((result) => {
-    //         console.log(result)
-    //         next();
-    //     })
-    //     .catch(err => console.log(err));
-    User.findById('5f5fb438230cc508758033f0')
-        .then(user => {
-            req.user = user;
-            next();
-        })
-        .catch(err => console.log(err))
-});
+// app.use((req,res,next) => {
+//     User.findById('5f5fb438230cc508758033f0')
+//         .then(user => {
+//             req.user = user;
+//             next();
+//         })
+//         .catch(err => console.log(err))
+// });
 
 //set the routes for admin
 app.use('/admin', adminRoute);
@@ -52,6 +53,17 @@ app.use(errorController.get404);
 
 //set up the port 
 const PORT = process.env.PORT || 8000;
-mongoConnect(() =>  {
-    app.listen(PORT, ()=> console.log(`Server started at port ${PORT}.`))
-})
+
+mongoose
+    .connect(process.env.MONGODB_URL, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    })
+    .then(() => {
+        console.log('Connected to Database!');
+        app.listen(PORT, ()=> console.log(`Server started at port ${PORT}.`))
+    })
+    .catch(err => console.log(err))
+
+// mongoConnect(() =>  {
+// })
