@@ -76,16 +76,43 @@ exports.postOrder = (req,res,next) => {
     req.user
         .populate('cart.items.productId')
         .execPopulate()
-        .then()
-        .catch()
+        .then((user) => {
+            const products = user.cart.items.map(item => {
+                return {
+                    product: {...item.productId._doc }, //doc pulls out all the data with that id
+                    quantity: item.quantity
+                }
+            });
+            const order = new Order({
+                products: products,
+                user: {
+                    name: req.user.name,
+                    userId: req.user //mongoose will only pull out the _id
+                }
+            });
+            return order.save();
+        })
+        .then(() => {
+            return req.user.clearCart();
+        })
+        .then(() => {
+            res.redirect('/orders');
+        })
+        .catch(err => console.log(err))
 }
 
-// exports.getOrders = (req, res, next) => {
-//     res.render('shops/orders', {
-//         pageTitle: 'Your Orders',
-//         path: '/orders'
-//     });
-// };
+exports.getOrders = (req, res, next) => {
+    Order
+        .find({ 'user.userId': req.user._id })
+        .then((orders) => {
+            res.render('shops/orders', {
+                pageTitle: 'Your Orders',
+                path: '/orders',
+                orders: orders
+            });
+        })
+        .catch(err => console.log(err));
+};
 
 // exports.getCheckOut = (req, res, next) => {
 //     res.render('shops/checkout', {
