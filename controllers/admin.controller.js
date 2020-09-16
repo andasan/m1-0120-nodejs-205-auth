@@ -79,9 +79,10 @@ exports.postEditProduct = (req,res,next) => {
 };
 
 exports.getProducts = (req,res,next) => {
-    console.log(req.user);
     Product.find()
+        // .populate('userId', 'name')
         .then((products) => {
+            // console.log(products);
             res.render('admin/products', {
                 pageTitle: 'Admin Products',
                 path: '/admin/products',

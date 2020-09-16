@@ -59,13 +59,19 @@ exports.getOneProduct = (req, res, next) => {
 //     })
 // }
 
-// exports.postCart = (req, res, next) => {
-//     const prodId = req.body.productId;
-//     Product.findById(prodId, product => {
-//         Cart.addProduct(prodId, product.price);
-//         res.redirect('/cart');
-//     });
-// };
+exports.postCart = (req, res, next) => {
+    const prodId = req.body.productId;
+    Product
+        .findById(prodId)
+        .then(product => {
+            return req.user.addToCart(product);
+        })
+        .then(() => {
+            res.redirect('/cart');
+        })
+        .catch(err => console.log(err));
+    // Cart.addProduct(prodId, product.price);
+};
 
 // exports.postCartDeleteProduct = (req, res, next) => {
 //     const prodId = req.body.productId;

@@ -22,6 +22,33 @@ const userSchema = new Schema({
 });
 
 //add to cart
+userSchema.methods.addToCart = function(product) {
+    //get the array index of the product being added to cart (if it doesnt find it, it will return a '-1' value)
+    const cartProductIndex = this.cart.items.findIndex(item => {
+        return item.productId.toString() === product._id.toString();
+    });
+    let newQuantity = 1;
+    const updatedCartItems = [...this.cart.items];
+
+    if(cartProductIndex >= 0){
+        //if item exists in the cart, add the quantity
+        newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+        updatedCartItems[cartProductIndex].quantity = newQuantity;
+    } else {
+        //if item doesnt exists in the cart, add to updatedcart and give it a quantity of 1
+        updatedCartItems.push({
+            productId: product._id,
+            quantity: newQuantity
+        })
+    }
+
+    const updatedCart = {
+        items: updatedCartItems
+    };
+
+    this.cart = updatedCart;
+    return this.save();
+}
 
 //remove from cart
 
