@@ -13,6 +13,7 @@ const mongoose = require('mongoose');
 const app = express();
 const shopRoute = require('./routes/shop.route');
 const adminRoute = require('./routes/admin.route');
+const authRoute = require('./routes/auth.route');
 // const mongoConnect = require('./util/database').mongoConnect;
 const errorController = require('./controllers/error.controller');
 
@@ -41,10 +42,9 @@ app.use((req,res,next) => {
         .catch(err => console.log(err))
 });
 
-//set the routes for admin
-app.use('/admin', adminRoute);
-//set the routes for shop
-app.use(shopRoute);
+app.use('/admin', adminRoute); //set the routes for admin
+app.use(shopRoute); //set the routes for shop
+app.use(authRoute); //set the routes for auth
 
 //error 404 checking middleware
 app.use(errorController.get404);
