@@ -9,6 +9,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 // const path = require('path');
 const mongoose = require('mongoose');
+const session = require('express-session');
 
 const app = express();
 const shopRoute = require('./routes/shop.route');
@@ -27,13 +28,14 @@ app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 //parse the request body into readable data
-app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 //specify the public folder to be of static access
 // app.use(express.static(path.join(__dirname,'public')));
 app.use('/public', express.static('public'));
+app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false }))
 
 //dummy auth flow ----storing a reference of a user
-app.use((req,res,next) => {
+app.use((req, res, next) => {
     User.findById('5f610976005db1074aba6607')
         .then(user => {
             req.user = user;
@@ -61,11 +63,11 @@ mongoose
     })
     .then(() => {
         console.log('Connected to Database!');
-        app.listen(PORT, ()=> console.log(`Server started at port ${PORT}.`));
+        app.listen(PORT, () => console.log(`Server started at port ${PORT}.`));
 
         //not necessary for production, just to create a a user to get an id for dummy auth
-        User.findOne().then((user)=> {
-            if(!user){
+        User.findOne().then((user) => {
+            if (!user) {
                 const user = new User({
                     name: 'admin',
                     email: 'admin@mail.com',

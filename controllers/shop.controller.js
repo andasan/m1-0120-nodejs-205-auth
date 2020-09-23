@@ -10,7 +10,7 @@ exports.getProducts = (req, res, next) => {
                 pageTitle: 'All Products',
                 products: products,
                 path: '/', //for navigation bar's active button
-                isAuth: req.isLoggedIn
+                isAuth: req.session.isLoggedIn
             });
         })
         .catch(err => console.log(err));
@@ -26,7 +26,7 @@ exports.getOneProduct = (req, res, next) => {
                 pageTitle: result.title,
                 product: result,
                 path: '/products', //for navigation bar's active button
-                isAuth: req.isLoggedIn
+                isAuth: req.session.isLoggedIn
             });
         })
         .catch(err => console.log(err));
@@ -43,7 +43,7 @@ exports.getCart = (req, res, next) => {
                 pageTitle: 'Your cart',
                 products: products,
                 path: '/cart',
-                isAuth: req.isLoggedIn
+                isAuth: req.session.isLoggedIn
             });
         })
         .catch(err => console.log(err))
@@ -112,7 +112,7 @@ exports.getOrders = (req, res, next) => {
                 pageTitle: 'Your Orders',
                 path: '/orders',
                 orders: orders,
-                isAuth: req.isLoggedIn
+                isAuth: req.session.isLoggedIn
             });
         })
         .catch(err => console.log(err));
