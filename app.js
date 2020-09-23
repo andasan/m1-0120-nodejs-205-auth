@@ -10,8 +10,13 @@ const bodyParser = require('body-parser');
 // const path = require('path');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 
 const app = express();
+const store = new MongoDBStore({
+    uri: process.env.MONGODB_URL,
+    collection: 'sessions'
+});
 const shopRoute = require('./routes/shop.route');
 const adminRoute = require('./routes/admin.route');
 const authRoute = require('./routes/auth.route');
@@ -32,7 +37,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //specify the public folder to be of static access
 // app.use(express.static(path.join(__dirname,'public')));
 app.use('/public', express.static('public'));
-app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false }))
+app.use(session({ 
+    secret: 'my secret', 
+    resave: false, 
+    saveUninitialized: false,
+    store: store
+}));
 
 //dummy auth flow ----storing a reference of a user
 app.use((req, res, next) => {
