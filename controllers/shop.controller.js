@@ -38,7 +38,6 @@ exports.getCart = (req, res, next) => {
         .execPopulate() //to enable our populate() to return a promise
         .then((user) => {
             const products = user.cart.items
-            // console.log(products);
             res.render('shops/cart', {
                 pageTitle: 'Your cart',
                 products: products,
@@ -61,7 +60,6 @@ exports.postCart = (req, res, next) => {
             res.redirect('/cart');
         })
         .catch(err => console.log(err));
-    // Cart.addProduct(prodId, product.price);
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
@@ -72,7 +70,6 @@ exports.postCartDeleteProduct = (req, res, next) => {
             res.redirect('/cart');
         })
         .catch(err => console.log(err));
-    // Cart.deleteProduct(prodId, product.price);
 };
 
 exports.postOrder = (req,res,next) => {

@@ -1,5 +1,4 @@
-//git clone https://github.com/andasan/m1-0120-nodejs-203-mongoose.git 
-//after cloning....
+//git clone https://github.com/andasan/m1-0120-nodejs-205-auth 
 //git remote -v //to check the origin's url
 //git remote remove origin
 //git remote add origin <your_url>
@@ -20,7 +19,6 @@ const store = new MongoDBStore({
 const shopRoute = require('./routes/shop.route');
 const adminRoute = require('./routes/admin.route');
 const authRoute = require('./routes/auth.route');
-// const mongoConnect = require('./util/database').mongoConnect;
 const errorController = require('./controllers/error.controller');
 
 const User = require('./models/user.model');
@@ -90,6 +88,3 @@ mongoose
         });
     })
     .catch(err => console.log(err))
-
-// mongoConnect(() =>  {
-// })

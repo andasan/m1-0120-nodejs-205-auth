@@ -1,5 +1,4 @@
 const Product = require('../models/product.model');
-const { getProducts } = require('./shop.controller');
 
 exports.getAddProduct = (req,res,next) => {
     res.render('admin/edit-product', {
@@ -57,7 +56,6 @@ exports.postEditProduct = (req,res,next) => {
     const updatedImageUrl = req.body.imageUrl;
     const updatedDesc = req.body.description;
     const updatedPrice = req.body.price;
-    // const updateProduct = new Product(prodId, updatedTitle, updatedImageUrl, updatedDesc, updatedPrice);
     Product
         .findById(prodId)
         .then((product) => {
@@ -72,19 +70,11 @@ exports.postEditProduct = (req,res,next) => {
             res.redirect('/admin/products');
         })
         .catch(err => console.log(err));
-
-    // updateProduct.edit(prodId) 
-    //     .then(()=>{
-    //         res.redirect('/admin/products');
-    //     })
-    //     .catch(err => console.log(err));
 };
 
 exports.getProducts = (req,res,next) => {
     Product.find()
-        // .populate('userId', 'name')
         .then((products) => {
-            // console.log(products);
             res.render('admin/products', {
                 pageTitle: 'Admin Products',
                 path: '/admin/products',
