@@ -9,7 +9,6 @@ exports.getLogin = (req, res, next) => {
     });
 }
 
-//fake login process for now.....
 exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -30,7 +29,7 @@ exports.postLogin = (req, res, next) => {
                             res.redirect('/');
                         })   
                     }
-                    
+
                     //if password do not match
                     res.redirect('/login')
                 })

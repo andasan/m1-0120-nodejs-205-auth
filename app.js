@@ -10,12 +10,15 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf');
 
 const app = express();
 const store = new MongoDBStore({
     uri: process.env.MONGODB_URL,
     collection: 'sessions'
 });
+const csrfProtection = csrf();
+
 const shopRoute = require('./routes/shop.route');
 const adminRoute = require('./routes/admin.route');
 const authRoute = require('./routes/auth.route');
@@ -41,8 +44,8 @@ app.use(session({
     saveUninitialized: false,
     store: store
 }));
+app.use(csrfProtection);
 
-//dummy auth flow ----storing a reference of a user
 app.use((req, res, next) => {
     if(!req.session.user){
         return next();
@@ -55,6 +58,11 @@ app.use((req, res, next) => {
         })
         .catch(err => console.log(err))
 });
+
+app.use((req,res,next) => {
+    res.locals.csrfToken = req.csrfToken();
+    next();
+})
 
 app.use('/admin', adminRoute); //set the routes for admin
 app.use(shopRoute); //set the routes for shop
