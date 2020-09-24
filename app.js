@@ -44,7 +44,11 @@ app.use(session({
 
 //dummy auth flow ----storing a reference of a user
 app.use((req, res, next) => {
-    User.findById('5f610976005db1074aba6607')
+    if(!req.session.user){
+        return next();
+    }
+    User
+        .findById(req.session.user._id)
         .then(user => {
             req.user = user;
             next();
