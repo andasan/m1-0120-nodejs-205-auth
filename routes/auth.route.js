@@ -12,6 +12,16 @@ router.get('/login', authController.getLogin);
 // @access  Public
 router.post('/login', authController.postLogin);
 
+// @route   GET /signup
+// @desc    To see the User registration page
+// @access  Public
+router.get('/signup', authController.getSignUp);
+
+// @route   POST /signup
+// @desc    To submit or create a new user
+// @access  Public
+router.post('/signup', authController.postSignUp);
+
 // @route   POST /logout
 // @desc    Un-authenticate a user
 // @access  Public

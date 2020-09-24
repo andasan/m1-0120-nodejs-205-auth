@@ -72,19 +72,5 @@ mongoose
     .then(() => {
         console.log('Connected to Database!');
         app.listen(PORT, () => console.log(`Server started at port ${PORT}.`));
-
-        //not necessary for production, just to create a a user to get an id for dummy auth
-        User.findOne().then((user) => {
-            if (!user) {
-                const user = new User({
-                    name: 'admin',
-                    email: 'admin@mail.com',
-                    cart: {
-                        items: []
-                    }
-                });
-                user.save();
-            }
-        });
     })
     .catch(err => console.log(err))
