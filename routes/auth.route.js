@@ -24,18 +24,29 @@ router.get('/signup', authController.getSignUp);
 // @desc    To submit or create a new user
 // @access  Public
 router.post(
-    '/signup', 
-    body('email')
-        .isEmail()
-        .withMessage('Please enter a valid email.')
-        .custom((value, {req}) => {
-            return User.findOne({email: value}).then((userDoc)=> {
-                console.log('validator: ',userDoc);
-                if(userDoc){
-                    return Promise.reject('Email already exists. Please use a different email.')
-                }
-            });
-        }), 
+    '/signup',
+    [
+        body('email')
+            .isEmail()
+            .withMessage('Please enter a valid email.')
+            .custom((value, { req }) => {
+                return User.findOne({ email: value }).then((userDoc) => {
+                    console.log('validator: ', userDoc);
+                    if (userDoc) {
+                        return Promise.reject('Email already exists. Please use a different email.')
+                    }
+                });
+            }),
+        body('password', 'Please enter a password with only numbers and text with at least 5 characters')
+            .isLength({ min: 5})
+            .isAlphanumeric(),
+        body('confirmPassword').custom((value, {req}) => {
+            if(value !== req.body.password){
+                throw new Error('Passwords have to match!');
+            }
+            return true;
+        })
+    ],
     authController.postSignUp
 );
 
