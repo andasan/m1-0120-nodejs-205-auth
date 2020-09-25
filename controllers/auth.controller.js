@@ -2,11 +2,16 @@ const User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
 
 exports.getLogin = (req, res, next) => {
-
+    let errMsg = req.flash('error');
+    if(errMsg.length > 0){
+        errMsg = errMsg[0]
+    }else{
+        errMsg = null;
+    }
     res.render('auth/login', {
         pageTitle: 'Login',
         path: '/login',
-        errorMessage: req.flash('error')
+        errorMessage: errMsg
     });
 }
 
@@ -38,6 +43,7 @@ exports.postLogin = (req, res, next) => {
                 })
                 .catch(err => {
                     console.log(err);
+                    req.flash('error', 'Invalid Email or Password');
                     res.redirect('/login');
                 })
             })
@@ -45,9 +51,16 @@ exports.postLogin = (req, res, next) => {
 }
 
 exports.getSignUp = (req, res, next) => {
+    let errMsg = req.flash('error');
+    if(errMsg.length > 0){
+        errMsg = errMsg[0]
+    }else{
+        errMsg = null;
+    }
     res.render('auth/signup', {
         pageTitle: 'Sign Up',
-        path: '/signup'
+        path: '/signup',
+        errorMessage: errMsg
     });
 }
 
@@ -62,6 +75,7 @@ exports.postSignUp = (req, res, next) => {
         .then((userDoc) => {
             //check if email exists
             if (userDoc) {
+                req.flash('error', 'Email already exists.');
                 return res.redirect('/signup');
             }
 
