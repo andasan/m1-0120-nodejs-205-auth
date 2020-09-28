@@ -74,6 +74,11 @@ app.use(authRoute); //set the routes for auth
 //error 404 checking middleware
 app.use(errorController.get404);
 
+
+app.use((error, req, res, next) => {
+    //redirect to page 500
+});
+
 //-------end of Middlewares
 
 //set up the port 
