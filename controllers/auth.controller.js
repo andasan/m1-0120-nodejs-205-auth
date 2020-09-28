@@ -67,7 +67,11 @@ exports.postLogin = (req, res, next) => {
                     res.redirect('/login');
                 })
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+            const error = new Error(err);
+            err.httpStatusCode = 500;
+            return next(error);
+        })
 }
 
 exports.getSignUp = (req, res, next) => {
@@ -119,7 +123,11 @@ exports.postSignUp = (req, res, next) => {
             //     html: '<h1>You have successfully signed up!</h1>'
             // });
         })
-        .catch(err => console.log(err));
+        .catch(err =>{
+            const error = new Error(err);
+            err.httpStatusCode = 500;
+            return next(error);
+        });
 
 }
 
