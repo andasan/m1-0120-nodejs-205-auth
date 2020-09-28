@@ -31,6 +31,7 @@ exports.postLogin = (req, res, next) => {
 
     const errors = validationResult(req);
     if(!errors.isEmpty()){
+        console.log('isnotempty');
         return res.status(422).render('auth/login', {
             pageTitle: 'Login',
             path: '/login',
@@ -40,6 +41,7 @@ exports.postLogin = (req, res, next) => {
 
     User.findOne({ email: email })
         .then(user => {
+            console.log('check user', user);
             if (!user) {
                 req.flash('error', 'Invalid Email or Password');
                 return res.redirect('/login')
