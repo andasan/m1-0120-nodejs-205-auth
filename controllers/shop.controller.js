@@ -1,5 +1,7 @@
+require('dotenv').config();
 const Order = require('../models/order.model');
 const Product = require('../models/product.model');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 //getting all products
 exports.getProducts = (req, res, next) => {
@@ -23,7 +25,7 @@ exports.getProducts = (req, res, next) => {
 exports.getOneProduct = (req, res, next) => {
     const prodId = req.params.productId;
     Product.findById(prodId)
-        .then((result)=> {
+        .then((result) => {
             res.render('shops/product-detail', {
                 pageTitle: result.title,
                 product: result,
@@ -68,6 +70,7 @@ exports.postCart = (req, res, next) => {
             res.redirect('/cart');
         })
         .catch(err => {
+            console.log(err);
             const error = new Error(err);
             err.httpStatusCode = 500;
             return next(error);
@@ -88,14 +91,14 @@ exports.postCartDeleteProduct = (req, res, next) => {
         });
 };
 
-exports.postOrder = (req,res,next) => {
+exports.postOrder = (req, res, next) => {
     req.user
         .populate('cart.items.productId')
         .execPopulate()
         .then((user) => {
             const products = user.cart.items.map(item => {
                 return {
-                    product: {...item.productId._doc }, //doc pulls out all the data with that id
+                    product: { ...item.productId._doc }, //doc pulls out all the data with that id
                     quantity: item.quantity
                 }
             });
@@ -141,6 +144,7 @@ exports.getOrders = (req, res, next) => {
 exports.getCheckOut = (req, res, next) => {
     let products;
     let total = 0;
+    let stripePubKey = process.env.STRIPE_PUB_KEY
 
     req.user
         .populate('cart.items.productId')
@@ -152,11 +156,30 @@ exports.getCheckOut = (req, res, next) => {
                 total += p.quantity * p.productId.price
             });
 
+            return stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                line_items: products.map(p => {
+                    return {
+                        name: p.productId.title,
+                        description: p.productId.description,
+                        amount: p.productId.price * 100,
+                        currency: 'usd',
+                        quantity: p.quantity
+                    }
+                }),
+                success_url: req.protocol + '://' + req.get('host') + '/checkout/success',
+                cancel_url: req.protocol + '://' + req.get('host') + '/checkout/cancel'
+            })
+
+        })
+        .then((session) => {
             return res.render('shops/checkout', {
                 pageTitle: 'Checkout',
                 path: '/checkout',
                 products: products,
-                totalSum: total
+                totalSum: total,
+                stripePubKey: stripePubKey,
+                sessionId: session.id
             })
         })
         .catch(err => {
