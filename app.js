@@ -6,7 +6,7 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-// const path = require('path');
+const path = require('path');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
@@ -39,6 +39,7 @@ app.set('views', 'views');
 app.use(bodyParser.urlencoded({ extended: false }));
 //specify the public folder to be of static access
 // app.use(express.static(path.join(__dirname,'public')));
+app.use('/images', express.static(path.join(__dirname,'images')));
 app.use('/public', express.static('public'));
 app.use(session({ 
     secret: process.env.SESSION_KEY, 
