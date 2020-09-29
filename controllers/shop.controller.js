@@ -52,6 +52,7 @@ exports.getCart = (req, res, next) => {
             });
         })
         .catch(err => {
+            console.log(err);
             const error = new Error(err);
             err.httpStatusCode = 500;
             return next(error);
@@ -67,6 +68,7 @@ exports.postCart = (req, res, next) => {
             return req.user.addToCart(product);
         })
         .then(() => {
+            console.log('Added To Cart');
             res.redirect('/cart');
         })
         .catch(err => {

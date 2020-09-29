@@ -39,6 +39,9 @@ router.get('/orders', isAuth, shopController.getOrders);
 // @access  Private
 router.post('/create-order', isAuth, shopController.postOrder);
 
+// @route   GET /checkout
+// @desc    Get all products in orders collection by user id
+// @access  Private
 router.get('/checkout', isAuth, shopController.getCheckOut);
 
 module.exports = router;
