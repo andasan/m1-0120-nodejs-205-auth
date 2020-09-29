@@ -14,17 +14,9 @@ exports.getAddProduct = (req,res,next) => {
 
 exports.postAddProduct = (req,res,next) => {
     const title = req.body.title;
-    const imageUrl = req.body.imageUrl;
+    const image = req.file;
     const description = req.body.description;
     const price = req.body.price;
-    const product = new Product({
-        // _id: new mongoose.Types.ObjectId('5f6e2d107fe91dc08154cdcb'), //demo to throw an error
-        title: title, 
-        imageUrl: imageUrl, 
-        description: description, 
-        price: price,
-        userId: req.user //mongoose will pick the id from the user object of request
-    });
 
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -36,6 +28,15 @@ exports.postAddProduct = (req,res,next) => {
         })
     }
 
+    const product = new Product({
+        // _id: new mongoose.Types.ObjectId('5f6e2d107fe91dc08154cdcb'), //demo to throw an error
+        title: title, 
+        image: image.path,
+        description: description, 
+        price: price,
+        userId: req.user //mongoose will pick the id from the user object of request
+    });
+
     product
         .save()
         .then(() => {
@@ -43,6 +44,7 @@ exports.postAddProduct = (req,res,next) => {
             res.redirect('/');
         })
         .catch(err => {
+            console.log(err)
             const error = new Error(err);
             err.httpStatusCode = 500;
             return next(error);

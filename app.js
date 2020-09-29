@@ -2,7 +2,7 @@
 //git remote -v //to check the origin's url
 //git remote remove origin
 //git remote add origin <your_url>
-
+const {v4: uuidv4} = require('uuid');
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -12,6 +12,7 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const multer = require('multer');
 
 const app = express();
 const store = new MongoDBStore({
@@ -26,7 +27,13 @@ const authRoute = require('./routes/auth.route');
 const errorController = require('./controllers/error.controller');
 
 const User = require('./models/user.model');
-const { render } = require('ejs');
+
+const MIME_TYPE_MAP = {
+    "image/jpg" : "jpg",
+    "image/jpeg" : "jpeg",
+    "image/png" : "png",
+    "image/gif" : "gif"
+}
 
 //-------Middlewares
 
@@ -37,9 +44,26 @@ app.set('views', 'views');
 
 //parse the request body into readable data
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({
+    limits: 3000000, //bytes
+    storage: multer.diskStorage({
+        destination: (req, file, cb) => {
+            cb(null, 'uploads/images')
+        },
+        filename: (req,file,cb) => {
+            const ext = MIME_TYPE_MAP[file.mimetype];
+            cb(null, uuidv4() + '.' + ext); //ewrtwert3423rwet.jpg
+        }
+    }),
+    fileFilter: (req, file, cb) => {
+        const isValid = !!MIME_TYPE_MAP[file.mimetype] //if we get undefined or null, !! converts it to false
+        let error = isValid ? null : new Error('Invalid MIME type');
+        cb(error, isValid);
+    }
+}).single('image'));
 //specify the public folder to be of static access
 // app.use(express.static(path.join(__dirname,'public')));
-app.use('/images', express.static(path.join(__dirname,'images')));
+app.use('/uploads/images', express.static(path.join(__dirname,'uploads','images')));
 app.use('/public', express.static('public'));
 app.use(session({ 
     secret: process.env.SESSION_KEY, 
@@ -50,6 +74,12 @@ app.use(session({
 app.use(csrfProtection);
 app.use(flash());
 
+app.use((req,res,next) => {
+    res.locals.csrfToken = req.csrfToken();
+    res.locals.isAuth = req.session.isLoggedIn;
+    next();
+})
+
 app.use((req, res, next) => {
     // throw new Error('dummy error');
     if(!req.session.user){
@@ -58,6 +88,9 @@ app.use((req, res, next) => {
     User
     .findById(req.session.user._id)
     .then(user => {
+        if(!user){
+            return next();
+        }
             req.user = user;
             next();
         })
@@ -66,19 +99,13 @@ app.use((req, res, next) => {
         })
 });
 
-app.use((req,res,next) => {
-    res.locals.csrfToken = req.csrfToken();
-    res.locals.isAuth = req.session.isLoggedIn;
-    next();
-})
-
 app.use('/admin', adminRoute); //set the routes for admin
 app.use(shopRoute); //set the routes for shop
 app.use(authRoute); //set the routes for auth
+app.get('/500', errorController.get500);
 
 //error checking middleware
 app.use(errorController.get404);
-app.get('/500', errorController.get500);
 
 //error handler middleware
 app.use((error, req, res, next) => {

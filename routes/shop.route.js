@@ -39,6 +39,6 @@ router.get('/orders', isAuth, shopController.getOrders);
 // @access  Private
 router.post('/create-order', isAuth, shopController.postOrder);
 
-// router.get('/checkout', shopController.getCheckOut);
+router.get('/checkout', isAuth, shopController.getCheckOut);
 
 module.exports = router;
