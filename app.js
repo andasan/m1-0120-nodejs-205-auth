@@ -110,6 +110,7 @@ app.use(errorController.get404);
 //error handler middleware
 app.use((error, req, res, next) => {
     // res.redirect('/500');
+    // const code = error.httpStatusCode
     res.status(500).render('500', {
         pageTitle: 'Error!',
         path: '/500',

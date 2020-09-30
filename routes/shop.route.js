@@ -44,4 +44,8 @@ router.post('/create-order', isAuth, shopController.postOrder);
 // @access  Private
 router.get('/checkout', isAuth, shopController.getCheckOut);
 
+router.get('/checkout/success', shopController.getCheckoutSuccess);
+
+router.get('/checkout/cancel', shopController.getCheckOut);
+
 module.exports = router;

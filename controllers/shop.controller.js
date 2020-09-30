@@ -190,5 +190,35 @@ exports.getCheckOut = (req, res, next) => {
             err.httpStatusCode = 500;
             return next(error);
         })
+}
 
+exports.getCheckoutSuccess = (req,res,next) => {
+    req.user
+        .populate('cart.items.productId')
+        .execPopulate()
+        .then(user => {
+            const products = user.cart.items.map(item =>{
+                return { quantity: item.quantity, product: { ...item.productId._doc } }
+            });
+            const order = new Order({
+                products: products,
+                user: {
+                    email: req.user.email,
+                    userId: req.user
+                }
+            });
+            return order.save();
+        })
+        .then(() => {
+            return req.user.clearCart();
+        })
+        .then(() => {
+            res.redirect('/orders');
+        })
+        .catch(err => {
+            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        })
 }
