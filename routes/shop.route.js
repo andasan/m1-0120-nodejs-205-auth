@@ -48,4 +48,6 @@ router.get('/checkout/success', shopController.getCheckoutSuccess);
 
 router.get('/checkout/cancel', shopController.getCheckOut);
 
+router.get('/orders/:orderId', isAuth, shopController.getInvoice);
+
 module.exports = router;

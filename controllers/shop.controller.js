@@ -1,4 +1,8 @@
 require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
+const PDFDocument = require('pdfkit');
+
 const Order = require('../models/order.model');
 const Product = require('../models/product.model');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -192,12 +196,12 @@ exports.getCheckOut = (req, res, next) => {
         })
 }
 
-exports.getCheckoutSuccess = (req,res,next) => {
+exports.getCheckoutSuccess = (req, res, next) => {
     req.user
         .populate('cart.items.productId')
         .execPopulate()
         .then(user => {
-            const products = user.cart.items.map(item =>{
+            const products = user.cart.items.map(item => {
                 return { quantity: item.quantity, product: { ...item.productId._doc } }
             });
             const order = new Order({
@@ -221,4 +225,40 @@ exports.getCheckoutSuccess = (req,res,next) => {
             error.httpStatusCode = 500;
             return next(error);
         })
+}
+
+exports.getInvoice = (req, res, next) => {
+    // console.log('getinvoice');
+    const orderId = req.params.orderId;
+    Order.findById(orderId)
+        .then(order => {
+            if (!order) {
+                return next(new Error('No order found.'));
+            }
+
+            if (order.user.userId.toString() !== req.user._id.toString()) {
+                // return next(new Error('Unauthorized'))
+                const error = new Error(err);
+                error.httpStatusCode = 401;
+                return next(error);
+            }
+
+            const invoiceName = 'invoice-' + orderId + '.pdf';
+            const invoicePath = path.join('data', 'invoices', invoiceName);
+
+            const pdfDoc = new PDFDocument();
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'inline; filename=" '+invoiceName +' " ');
+
+            pdfDoc.pipe(fs.createWriteStream(invoicePath));
+            pdfDoc.pipe(res);
+
+            pdfDoc.fontSize(26).text('Invoice', {
+                underline: true
+            });
+
+            pdfDoc.end();
+
+        })
+        .catch(err => next(err))
 }
