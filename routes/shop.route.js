@@ -44,10 +44,19 @@ router.post('/create-order', isAuth, shopController.postOrder);
 // @access  Private
 router.get('/checkout', isAuth, shopController.getCheckOut);
 
+// @route   GET /checkout/success
+// @desc    Checkout Session for success
+// @access  Public
 router.get('/checkout/success', shopController.getCheckoutSuccess);
 
+// @route   GET /checkout/cancel
+// @desc    Checkout Session for cancelled or failed payment
+// @access  Public
 router.get('/checkout/cancel', shopController.getCheckOut);
 
+// @route   GET /orders/:orderId
+// @desc    Get the Order Invoice in PDF format
+// @access  Private
 router.get('/orders/:orderId', isAuth, shopController.getInvoice);
 
 module.exports = router;
